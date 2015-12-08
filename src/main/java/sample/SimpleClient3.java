@@ -45,21 +45,7 @@ public class SimpleClient3 {
 				+ ");");
 	}
 
-	public void loadData() {
-//		session.execute("INSERT INTO simplex.songs (id, title, album, artist, tags) "
-//				+ "VALUES ("
-//				+ "756716f7-2e54-4715-9f00-91dcbea6cf50,"
-//				+ "'La Petite Tonkinoise',"
-//				+ "'Bye Bye Blackbird',"
-//				+ "'Joséphine Baker'," + "{'jazz', '2013'})" + ";");
-//		session.execute("INSERT INTO simplex.playlists (id, song_id, title, album, artist) "
-//				+ "VALUES ("
-//				+ "2cc9ccb7-6221-4ccb-8387-f22b6a1b354d,"
-//				+ "756716f7-2e54-4715-9f00-91dcbea6cf50,"
-//				+ "'La Petite Tonkinoise',"
-//				+ "'Bye Bye Blackbird',"
-//				+ "'Joséphine Baker'" + ");");
-		
+	public void loadData() {		
 		PreparedStatement statement = getSession().prepare(
 			      "INSERT INTO simplex.songs " +
 			      "(id, title, album, artist, tags) " +
