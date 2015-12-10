@@ -21,8 +21,8 @@ public class SimpleClient3 {
 		return this.session;
 	}
 
-	public void connect(String node) {
-		cluster = Cluster.builder().addContactPoint(node).build();
+	public void connect(String... node) {
+		cluster = Cluster.builder().addContactPoints(node).build();
 		Metadata metadata = cluster.getMetadata();
 		System.out.printf("Connected to cluster: %s\n",
 				metadata.getClusterName());
@@ -96,7 +96,7 @@ public class SimpleClient3 {
 
 	public static void main(String[] args) {
 		SimpleClient3 client = new SimpleClient3();
-		client.connect("192.168.33.11");
+		client.connect("192.168.33.12", "192.168.33.13");
 		client.createSchema();
 		client.loadData();
 		client.querySchema();
