@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ import timeline.sample.Address;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.mapping.MappingManager;
 import com.datastax.driver.mapping.Result;
@@ -49,14 +51,50 @@ public class SampleService {
 		}
 	}
 	
+	public void registPost(PostForm form){
+		registPost(form.getUserId(), form.getContent());
+	}
+	
 	public void registPost(String userid, String content){
 		try(Session session = cluster.connect()){
-			MappingManager manager = new MappingManager (session);
-			Test test = manager.createAccessor(Test.class);
-			ResultSet a = test.selectTimeUuid();
-			UUID messageid = a.one().getUUID("timeuuid");
+			Test test = createAccessor(session);
+			ResultSet results = test.selectTimeUuid();
+			UUID messageid = results.one().getUUID("timeuuid");
 			test.insertPost(userid, messageid);
 			test.insertMessage(messageid, content);
 		}
+	}
+	
+	public List<String> getPostList(String userId){
+		List<String> postList = new ArrayList<>();
+		
+		try(Session session = cluster.connect()){
+			Test test = createAccessor(session);
+			ResultSet results = test.selectPostList(userId);
+			for(Row row : results){
+				String content = getContent(test, row.getUUID("messageid"));
+				if(!StringUtils.isBlank(content)){
+					postList.add(content);
+				}
+			}
+			return postList;
+		}
+		
+	}
+	
+	private String getContent(Test test, UUID messageId){
+		ResultSet result = test.selectMessage(messageId);
+		Row row = result.one();
+		
+		if(row != null){
+			return row.getString("content");
+		}else{
+			return null;
+		}
+	}
+	
+	private Test createAccessor(Session session){
+		MappingManager manager = new MappingManager (session);
+		return manager.createAccessor(Test.class);
 	}
 }

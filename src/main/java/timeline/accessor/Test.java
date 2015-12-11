@@ -1,6 +1,5 @@
 package timeline.accessor;
 
-import java.util.List;
 import java.util.UUID;
 
 import timeline.sample.Account;
@@ -34,10 +33,13 @@ public interface Test {
 	@Query("INSERT INTO timeline.post (userid, messageid) VALUES (:userid, :messageid)")
 	void insertPost(@Param("userid") String userid, @Param("messageid") UUID messageid);
 
-	@Query("SELECT messageid FROM timeline.post WHERE userid = :userid")
+	@Query("SELECT messageid FROM timeline.post WHERE userid = :userid ORDER BY messageid DESC")
 	ResultSet selectPostList(@Param("userId") String userId);
 
 	@Query("INSERT INTO timeline.message (messageid, content) VALUES (:messageid, :content)")
 	void insertMessage(@Param("messageid") UUID messageid, @Param("content") String content);
+
+	@Query("SELECT content FROM timeline.message WHERE messageid = :messageid")
+	ResultSet selectMessage(@Param("messageid") UUID messageid);
 	
 }
