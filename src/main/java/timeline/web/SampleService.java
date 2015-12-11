@@ -67,7 +67,7 @@ public class SampleService {
 		}
 	}
 	
-	public List<Post> getPostList(String userId){
+	public List<Post> getTimeLine(String userId){
 		List<Post> postList = new ArrayList<>();
 		
 		try(Session session = cluster.connect()){
@@ -85,7 +85,26 @@ public class SampleService {
 			}
 			return postList;
 		}
+	}
+
+	
+	public List<Post> getPostList(String userId){
+		List<Post> postList = new ArrayList<>();
 		
+		try(Session session = cluster.connect()){
+			PostAccessor test = createAccessor(session);
+			Result<Message> results = test.selectPostList(userId);
+			for(Message message : results){
+				String content = getContent(test, message.getMessageId());
+				if(!StringUtils.isBlank(content)){
+					Post post = new Post();
+					post.setContent(content);
+					post.setPostDate(message.getPostDate());
+					postList.add(post);
+				}
+			}
+			return postList;
+		}
 	}
 	
 	private String getContent(PostAccessor test, UUID messageId){

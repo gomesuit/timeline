@@ -7,9 +7,21 @@
 </head>
 <body>
 	<div th:text="${userid}" />
-	が
-	<div th:text="${viewUserId}" />
-	のページを見ている
+	
+	<br /><hr /><br />
+	<div>投稿</div>
+	<form th:action="@{/post}" th:object="${postForm}" method="post">
+		<input type="hidden" name="userId" th:value="${userid}"/>
+		<table border="1" rules="all">
+			<tr>
+				<td>content</td>
+			</tr>
+			<tr>
+				<td><input type="text" th:field="*{content}" /></td>
+			</tr>
+		</table>
+		<input type="submit" value="投稿" />
+	</form>
 	
 	<br /><hr /><br />
 	<div>投稿リスト</div>
@@ -17,6 +29,7 @@
 		<tr>
 			<td>content</td>
 			<td>投稿日時</td>
+			<td>ユーザ</td>
 		</tr>
 		<tr th:each="post : ${postList}">
 			<td>
@@ -24,6 +37,9 @@
 			</td>
 			<td>
 				<div th:text="${#dates.format(post.postDate, 'yyyy/MM/dd HH:mm:ss')}" />
+			</td>
+			<td>
+				<div th:text="${post.userId}" />
 			</td>
 		</tr>
 	</table>

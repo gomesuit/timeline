@@ -22,10 +22,22 @@ public class SampleController {
     }
 
     @RequestMapping("/{userid}")
-    public String user(@PathVariable String userid, Model model) throws Exception {
+    public String timeline(@PathVariable String userid, Model model) throws Exception {
     	model.addAttribute("userid", userid);
     	model.addAttribute("postForm", new PostForm());
-    	model.addAttribute("postList", sampleService.getPostList(userid));
+    	model.addAttribute("postList", sampleService.getTimeLine(userid));
+    	
+        return "timeline";
+    }
+
+    @RequestMapping("/{userid}/{viewUserId}")
+    public String user(
+    		@PathVariable String userid,
+    		@PathVariable String viewUserId,
+    		Model model) throws Exception {
+    	model.addAttribute("userid", userid);
+    	model.addAttribute("viewUserId", viewUserId);
+    	model.addAttribute("postList", sampleService.getPostList(viewUserId));
     	
         return "user";
     }
