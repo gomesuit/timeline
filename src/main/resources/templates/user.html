@@ -29,6 +29,7 @@
 		<tr>
 			<td>content</td>
 			<td>投稿日時</td>
+			<td>ユーザ</td>
 		</tr>
 		<tr th:each="post : ${postList}">
 			<td>
@@ -36,6 +37,9 @@
 			</td>
 			<td>
 				<div th:text="${#dates.format(post.postDate, 'yyyy/MM/dd HH:mm:ss')}" />
+			</td>
+			<td>
+				<div th:text="${post.content}" />
 			</td>
 		</tr>
 	</table>

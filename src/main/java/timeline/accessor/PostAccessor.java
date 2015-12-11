@@ -13,7 +13,7 @@ import com.datastax.driver.mapping.annotations.Param;
 import com.datastax.driver.mapping.annotations.Query;
 
 @Accessor
-public interface Test {
+public interface PostAccessor {
 //	@Query("SELECT * FROM complex.users WHERE id = :id")
 //	String getUserNamed(@Param("userId") UUID id);
 
@@ -38,10 +38,16 @@ public interface Test {
 	@Query("SELECT messageid, dateof(messageid) AS postDate FROM timeline.post WHERE userid = :userid ORDER BY messageid DESC")
 	Result<Message> selectPostList(@Param("userId") String userId);
 
-	@Query("INSERT INTO timeline.message (messageid, content) VALUES (:messageid, :content)")
-	void insertMessage(@Param("messageid") UUID messageid, @Param("content") String content);
+	@Query("INSERT INTO timeline.message (messageid, content, userid) VALUES (:messageid, :content, :userid)")
+	void insertMessage(@Param("messageid") UUID messageid, @Param("content") String content, @Param("userId") String userId);
 
 	@Query("SELECT content FROM timeline.message WHERE messageid = :messageid")
 	ResultSet selectMessage(@Param("messageid") UUID messageid);
+
+	@Query("INSERT INTO timeline.timeline (userid, messageid) VALUES (:userid, :messageid)")
+	void insertTimeLine(@Param("userid") String userid, @Param("messageid") UUID messageid);
+
+	@Query("SELECT messageid, dateof(messageid) AS postDate, userid FROM timeline.timeline WHERE userid = :userid ORDER BY messageid DESC")
+	Result<Message> selectTimeLine(@Param("userId") String userId);
 	
 }

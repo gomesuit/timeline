@@ -8,7 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import timeline.accessor.Test;
+import timeline.accessor.PostAccessor;
 import timeline.model.Message;
 import timeline.sample.Account;
 import timeline.sample.Address;
@@ -38,7 +38,7 @@ public class SampleService {
 			
 
 			MappingManager manager = new MappingManager (session);
-			Test test = manager.createAccessor(Test.class);
+			PostAccessor test = manager.createAccessor(PostAccessor.class);
 			test.insertAccount(email, "John Doe", address);
 		}
 	}
@@ -46,7 +46,7 @@ public class SampleService {
 	public Account get(String userid) {
 		try(Session session = cluster.connect()){
 			MappingManager manager = new MappingManager (session);
-			Test test = manager.createAccessor(Test.class);
+			PostAccessor test = manager.createAccessor(PostAccessor.class);
 			Account whose = test.getAccount(userid);
 			return whose;
 		}
@@ -58,11 +58,12 @@ public class SampleService {
 	
 	public void registPost(String userid, String content){
 		try(Session session = cluster.connect()){
-			Test test = createAccessor(session);
+			PostAccessor test = createAccessor(session);
 			ResultSet results = test.selectTimeUuid();
 			UUID messageid = results.one().getUUID("timeuuid");
 			test.insertPost(userid, messageid);
-			test.insertMessage(messageid, content);
+			test.insertMessage(messageid, content, userid);
+			test.insertTimeLine(userid, messageid);
 		}
 	}
 	
@@ -70,14 +71,15 @@ public class SampleService {
 		List<Post> postList = new ArrayList<>();
 		
 		try(Session session = cluster.connect()){
-			Test test = createAccessor(session);
-			Result<Message> results = test.selectPostList(userId);
+			PostAccessor test = createAccessor(session);
+			Result<Message> results = test.selectTimeLine(userId);
 			for(Message message : results){
 				String content = getContent(test, message.getMessageId());
 				if(!StringUtils.isBlank(content)){
 					Post post = new Post();
 					post.setContent(content);
 					post.setPostDate(message.getPostDate());
+					post.setUserId(message.getUserId());
 					postList.add(post);
 				}
 			}
@@ -86,7 +88,7 @@ public class SampleService {
 		
 	}
 	
-	private String getContent(Test test, UUID messageId){
+	private String getContent(PostAccessor test, UUID messageId){
 		ResultSet result = test.selectMessage(messageId);
 		Row row = result.one();
 		
@@ -97,8 +99,8 @@ public class SampleService {
 		}
 	}
 	
-	private Test createAccessor(Session session){
+	private PostAccessor createAccessor(Session session){
 		MappingManager manager = new MappingManager (session);
-		return manager.createAccessor(Test.class);
+		return manager.createAccessor(PostAccessor.class);
 	}
 }

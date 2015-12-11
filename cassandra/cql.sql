@@ -37,6 +37,7 @@ CREATE TABLE timeline.post (
 CREATE TABLE timeline.message (
 	messageid timeuuid,
 	content text,
+	userid text,
 	PRIMARY KEY (messageid)
 );
 
