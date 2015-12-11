@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import timeline.sample.Account;
-
 @Controller
 public class SampleController {
 	@Autowired
@@ -22,10 +20,9 @@ public class SampleController {
 
     @RequestMapping("/{userid}")
     @ResponseBody
-    public Account user(@PathVariable String userid, Model model) throws Exception {
-    	sampleService.sampleRegist(userid);
-    	Account account = sampleService.get(userid);
+    public String user(@PathVariable String userid, Model model) throws Exception {    	
+    	sampleService.registPost(userid, "こんにちは");
     	
-        return account;
+        return "su";
     }
 }
