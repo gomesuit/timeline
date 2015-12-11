@@ -28,13 +28,13 @@ public class Main {
 
 	private static Session getSession() {
 		cluster = Cluster.builder().addContactPoints("192.168.33.12", "192.168.33.13").build();
-		Metadata metadata = cluster.getMetadata();
-		System.out.printf("Connected to cluster: %s\n",
-				metadata.getClusterName());
-		for (Host host : metadata.getAllHosts()) {
-			System.out.printf("Datatacenter: %s; Host: %s; Rack: %s\n",
-					host.getDatacenter(), host.getAddress(), host.getRack());
-		}
+//		Metadata metadata = cluster.getMetadata();
+//		System.out.printf("Connected to cluster: %s\n",
+//				metadata.getClusterName());
+//		for (Host host : metadata.getAllHosts()) {
+//			System.out.printf("Datatacenter: %s; Host: %s; Rack: %s\n",
+//					host.getDatacenter(), host.getAddress(), host.getRack());
+//		}
 		return cluster.connect();
 	}
 
