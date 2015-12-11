@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import timeline.accessor.Test;
+import timeline.model.Message;
 import timeline.sample.Account;
 import timeline.sample.Address;
 
@@ -65,16 +66,19 @@ public class SampleService {
 		}
 	}
 	
-	public List<String> getPostList(String userId){
-		List<String> postList = new ArrayList<>();
+	public List<Post> getPostList(String userId){
+		List<Post> postList = new ArrayList<>();
 		
 		try(Session session = cluster.connect()){
 			Test test = createAccessor(session);
-			ResultSet results = test.selectPostList(userId);
-			for(Row row : results){
-				String content = getContent(test, row.getUUID("messageid"));
+			Result<Message> results = test.selectPostList(userId);
+			for(Message message : results){
+				String content = getContent(test, message.getMessageId());
 				if(!StringUtils.isBlank(content)){
-					postList.add(content);
+					Post post = new Post();
+					post.setContent(content);
+					post.setPostDate(message.getPostDate());
+					postList.add(post);
 				}
 			}
 			return postList;

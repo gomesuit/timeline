@@ -6,6 +6,10 @@
 	<title>sample page</title>
 </head>
 <body>
+	<div th:text="${userid}" />
+	
+	<br /><hr /><br />
+	<div>投稿</div>
 	<form th:action="@{/post}" th:object="${postForm}" method="post">
 		<input type="hidden" name="userId" th:value="${userid}"/>
 		<table border="1" rules="all">
@@ -19,13 +23,19 @@
 		<input type="submit" value="投稿" />
 	</form>
 	
+	<br /><hr /><br />
+	<div>投稿リスト</div>
 	<table border="1" rules="all">
 		<tr>
-			<td>投稿</td>
+			<td>content</td>
+			<td>投稿日時</td>
 		</tr>
 		<tr th:each="post : ${postList}">
 			<td>
-				<div th:text="${post}" />
+				<div th:text="${post.content}" />
+			</td>
+			<td>
+				<div th:text="${#dates.format(post.postDate, 'yyyy/MM/dd HH:mm:ss')}" />
 			</td>
 		</tr>
 	</table>

@@ -2,10 +2,12 @@ package timeline.accessor;
 
 import java.util.UUID;
 
+import timeline.model.Message;
 import timeline.sample.Account;
 import timeline.sample.Address;
 
 import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.mapping.Result;
 import com.datastax.driver.mapping.annotations.Accessor;
 import com.datastax.driver.mapping.annotations.Param;
 import com.datastax.driver.mapping.annotations.Query;
@@ -33,8 +35,8 @@ public interface Test {
 	@Query("INSERT INTO timeline.post (userid, messageid) VALUES (:userid, :messageid)")
 	void insertPost(@Param("userid") String userid, @Param("messageid") UUID messageid);
 
-	@Query("SELECT messageid FROM timeline.post WHERE userid = :userid ORDER BY messageid DESC")
-	ResultSet selectPostList(@Param("userId") String userId);
+	@Query("SELECT messageid, dateof(messageid) AS postDate FROM timeline.post WHERE userid = :userid ORDER BY messageid DESC")
+	Result<Message> selectPostList(@Param("userId") String userId);
 
 	@Query("INSERT INTO timeline.message (messageid, content) VALUES (:messageid, :content)")
 	void insertMessage(@Param("messageid") UUID messageid, @Param("content") String content);
