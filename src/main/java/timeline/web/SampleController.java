@@ -29,6 +29,7 @@ public class SampleController {
 
     	model.addAttribute("followForm", new FollowForm());
     	model.addAttribute("followList", sampleService.getFollowList(userid));
+    	model.addAttribute("followerList", sampleService.getFollowerList(userid));
     	
         return "timeline";
     }

@@ -160,4 +160,15 @@ public class SampleService {
 		}
 		return followList;
 	}
+
+	public Object getFollowerList(String userid) {
+		List<String> followerList = new ArrayList<>();
+		try(Session session = cluster.connect()){
+			PostAccessor accessor = createAccessor(session);
+			for(Row row : accessor.selectFollowerList(userid)){
+				followerList.add(row.getString("userid"));
+			}
+		}
+		return followerList;
+	}
 }

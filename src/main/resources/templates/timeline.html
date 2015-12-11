@@ -23,6 +23,7 @@
 		<input type="submit" value="フォロー" />
 	</form>
 	
+	<br />
 	<div>フォローリスト</div>
 	<table border="1" rules="all">
 		<tr>
@@ -39,6 +40,19 @@
 					<input type="hidden" name="followId" th:value="${follow}"/>
 					<input type="submit" value="解除" />
 				</form>
+			</td>
+		</tr>
+	</table>
+	
+	<br />
+	<div>フォロワーリスト</div>
+	<table border="1" rules="all">
+		<tr>
+			<td>ユーザ</td>
+		</tr>
+		<tr th:each="follower : ${followerList}">
+			<td>
+				<a th:href="${userid} + '/' + ${follower}" th:text="${follower}" />
 			</td>
 		</tr>
 	</table>
