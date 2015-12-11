@@ -13,8 +13,8 @@ public class Message {
 	@Column(name = "messageid")
 	private UUID messageId;
 	private Date postDate;
-	@Column(name = "userid")
-	private String userId;
+	@Column(name = "ownerid")
+	private String ownerId;
 	
 	public UUID getMessageId() {
 		return messageId;
@@ -28,10 +28,10 @@ public class Message {
 	public void setPostDate(Date postDate) {
 		this.postDate = postDate;
 	}
-	public String getUserId() {
-		return userId;
+	public String getOwnerId() {
+		return ownerId;
 	}
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setOwnerId(String ownerId) {
+		this.ownerId = ownerId;
 	}
 }

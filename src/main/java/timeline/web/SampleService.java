@@ -62,8 +62,11 @@ public class SampleService {
 			ResultSet results = test.selectTimeUuid();
 			UUID messageid = results.one().getUUID("timeuuid");
 			test.insertPost(userid, messageid);
-			test.insertMessage(messageid, content, userid);
-			test.insertTimeLine(userid, messageid);
+			test.insertMessage(messageid, content);
+			test.insertTimeLine(userid, messageid, userid);
+			for(Row row : test.selectFollowerList(userid)){
+				test.insertTimeLine(row.getString("userid"), messageid, userid);
+			}
 		}
 	}
 	
@@ -79,7 +82,7 @@ public class SampleService {
 					Post post = new Post();
 					post.setContent(content);
 					post.setPostDate(message.getPostDate());
-					post.setUserId(message.getUserId());
+					post.setUserId(message.getOwnerId());
 					postList.add(post);
 				}
 			}
@@ -119,7 +122,42 @@ public class SampleService {
 	}
 	
 	private PostAccessor createAccessor(Session session){
-		MappingManager manager = new MappingManager (session);
+		MappingManager manager = new MappingManager(session);
 		return manager.createAccessor(PostAccessor.class);
+	}
+	
+	public void addFollow(String userId, String followId){
+		try(Session session = cluster.connect()){
+			PostAccessor accessor = createAccessor(session);
+			accessor.insertFollow(userId, followId);
+			Result<Message> results = accessor.selectPostList(followId);
+			for(Message msg : results){
+				accessor.insertTimeLine(userId, msg.getMessageId(), followId);
+			}
+		}
+	}
+	
+	public void releaseFollow(String userId, String followId){
+		try(Session session = cluster.connect()){
+			PostAccessor accessor = createAccessor(session);
+			accessor.deleteFollow(userId, followId);
+			Result<Message> results = accessor.selectPostList(followId);
+			for(Message msg : results){
+				accessor.deleteTimeLine(userId, msg.getMessageId());
+			}
+		}
+		
+	}
+
+	public List<String> getFollowList(String userid) {
+		List<String> followList = new ArrayList<>();
+		try(Session session = cluster.connect()){
+			PostAccessor accessor = createAccessor(session);
+			for(Row row : accessor.selectFollowList(userid)){
+				followList.add(row.getString("followid"));
+			}
+			
+		}
+		return followList;
 	}
 }

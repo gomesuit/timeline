@@ -9,6 +9,41 @@
 	<div th:text="${userid}" />
 	
 	<br /><hr /><br />
+	<div>フォロー</div>
+	<form th:action="@{/follow}" th:object="${followForm}" method="post">
+		<input type="hidden" name="userId" th:value="${userid}"/>
+		<table border="1" rules="all">
+			<tr>
+				<td>ユーザ</td>
+			</tr>
+			<tr>
+				<td><input type="text" th:field="*{followId}" /></td>
+			</tr>
+		</table>
+		<input type="submit" value="フォロー" />
+	</form>
+	
+	<div>フォローリスト</div>
+	<table border="1" rules="all">
+		<tr>
+			<td>ユーザ</td>
+			<td>解除</td>
+		</tr>
+		<tr th:each="follow : ${followList}">
+			<td>
+				<a th:href="${userid} + '/' +${follow}" th:text="${follow}" />
+			</td>
+			<td>
+				<form th:action="@{/followOut}" th:object="${followForm}" method="post">
+					<input type="hidden" name="userId" th:value="${userid}"/>
+					<input type="hidden" name="followId" th:value="${follow}"/>
+					<input type="submit" value="解除" />
+				</form>
+			</td>
+		</tr>
+	</table>
+	
+	<br /><hr /><br />
 	<div>投稿</div>
 	<form th:action="@{/post}" th:object="${postForm}" method="post">
 		<input type="hidden" name="userId" th:value="${userid}"/>

@@ -26,6 +26,9 @@ public class SampleController {
     	model.addAttribute("userid", userid);
     	model.addAttribute("postForm", new PostForm());
     	model.addAttribute("postList", sampleService.getTimeLine(userid));
+
+    	model.addAttribute("followForm", new FollowForm());
+    	model.addAttribute("followList", sampleService.getFollowList(userid));
     	
         return "timeline";
     }
@@ -43,10 +46,30 @@ public class SampleController {
     }
 
     @RequestMapping(value="/post", method=RequestMethod.POST)
-    public String user(
+    public String post(
     		@ModelAttribute PostForm form,
     		HttpServletRequest request) throws Exception {    	
     	sampleService.registPost(form);
+
+		String referer = request.getHeader("Referer");
+		return "redirect:" + referer;
+    }
+
+    @RequestMapping(value="/follow", method=RequestMethod.POST)
+    public String follow(
+    		@ModelAttribute FollowForm form,
+    		HttpServletRequest request) throws Exception {    	
+    	sampleService.addFollow(form.getUserId(), form.getFollowId());
+
+		String referer = request.getHeader("Referer");
+		return "redirect:" + referer;
+    }
+
+    @RequestMapping(value="/followOut", method=RequestMethod.POST)
+    public String followOut(
+    		@ModelAttribute FollowForm form,
+    		HttpServletRequest request) throws Exception {    	
+    	sampleService.releaseFollow(form.getUserId(), form.getFollowId());
 
 		String referer = request.getHeader("Referer");
 		return "redirect:" + referer;

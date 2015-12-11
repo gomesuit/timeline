@@ -37,12 +37,21 @@ CREATE TABLE timeline.post (
 CREATE TABLE timeline.message (
 	messageid timeuuid,
 	content text,
-	userid text,
 	PRIMARY KEY (messageid)
 );
 
 CREATE TABLE timeline.timeline (
 	userid text,
 	messageid timeuuid,
+	ownerid text,
 	PRIMARY KEY (userid, messageid)
 );
+
+CREATE TABLE timeline.follow (
+	userid text,
+	followid text,
+	PRIMARY KEY (userid, followid)
+);
+
+CREATE INDEX follower ON timeline.follow (followid);
+CREATE INDEX timelineowner ON timeline.timeline (ownerid);

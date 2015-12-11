@@ -12,6 +12,20 @@
 	のページを見ている
 	
 	<br /><hr /><br />
+	<form th:action="@{/follow}" th:object="${followForm}" method="post">
+		<input type="hidden" name="userId" th:value="${userid}"/>
+		<input type="hidden" name="followId" th:value="${viewUserId}"/>
+		<input type="submit" value="フォローする" />
+	</form>
+	
+	<br /><hr /><br />
+	<form th:action="@{/followOut}" th:object="${followForm}" method="post">
+		<input type="hidden" name="userId" th:value="${userid}"/>
+		<input type="hidden" name="followId" th:value="${viewUserId}"/>
+		<input type="submit" value="フォロー解除する" />
+	</form>
+	
+	<br /><hr /><br />
 	<div>投稿リスト</div>
 	<table border="1" rules="all">
 		<tr>
