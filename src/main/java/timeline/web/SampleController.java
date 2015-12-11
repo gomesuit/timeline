@@ -1,7 +1,5 @@
 package timeline.web;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +18,7 @@ public class SampleController {
     @RequestMapping("/")
     String sample(Model model) throws Exception {
     	
-        return "sample";
+        return "top";
     }
 
     @RequestMapping("/{userid}")
@@ -29,7 +27,7 @@ public class SampleController {
     	model.addAttribute("postForm", new PostForm());
     	model.addAttribute("postList", sampleService.getPostList(userid));
     	
-        return "sample";
+        return "user";
     }
 
     @RequestMapping(value="/post", method=RequestMethod.POST)
