@@ -32,7 +32,7 @@ CREATE TABLE timeline.post (
 	userid text,
 	messageid timeuuid,
 	PRIMARY KEY (userid, messageid)
-);
+) WITH CLUSTERING ORDER BY (messageid DESC);
 
 CREATE TABLE timeline.message (
 	messageid timeuuid,
@@ -45,7 +45,7 @@ CREATE TABLE timeline.timeline (
 	messageid timeuuid,
 	ownerid text,
 	PRIMARY KEY (userid, messageid)
-);
+) WITH CLUSTERING ORDER BY (messageid DESC);
 
 CREATE TABLE timeline.follow (
 	userid text,
