@@ -1,6 +1,5 @@
 package timeline.accessor;
 
-import java.util.Date;
 import java.util.UUID;
 
 import timeline.model.Message;

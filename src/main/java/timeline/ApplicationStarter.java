@@ -1,10 +1,14 @@
 package timeline;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import timeline.accessor.PostAccessor;
+
 import com.datastax.driver.core.Cluster;
+import com.datastax.driver.mapping.MappingManager;
 
 @SpringBootApplication
 public class ApplicationStarter {
@@ -19,5 +23,12 @@ public class ApplicationStarter {
 				.build();
 		
 		return cluster;
+	}
+	
+	@Bean
+	@Autowired
+	public PostAccessor postAccessor(Cluster cluster){
+		MappingManager manager = new MappingManager(cluster.connect());
+		return manager.createAccessor(PostAccessor.class);
 	}
 }

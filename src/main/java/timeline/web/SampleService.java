@@ -15,71 +15,62 @@ import timeline.model.Message;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
-import com.datastax.driver.core.Session;
-import com.datastax.driver.mapping.MappingManager;
 import com.datastax.driver.mapping.Result;
 
 @Service
 public class SampleService {
 	@Autowired
 	private Cluster cluster;
+	@Autowired
+	private PostAccessor postAccessor;
 	
 	public void registPost(PostForm form){
 		registPost(form.getUserId(), form.getContent());
 	}
 	
 	public void registPost(String userid, String content){
-		try(Session session = cluster.connect()){
-			PostAccessor test = createAccessor(session);
-			ResultSet results = test.selectTimeUuid();
+			ResultSet results = postAccessor.selectTimeUuid();
 			UUID messageid = results.one().getUUID("timeuuid");
-			test.insertPost(userid, messageid, new Date().getTime());
-			test.insertMessage(messageid, content);
-			test.insertTimeLine(userid, messageid, userid);
-			for(Row row : test.selectFollowerList(userid)){
-				test.insertTimeLine(row.getString("userid"), messageid, userid);
+			postAccessor.insertPost(userid, messageid, new Date().getTime());
+			postAccessor.insertMessage(messageid, content);
+			postAccessor.insertTimeLine(userid, messageid, userid);
+			for(Row row : postAccessor.selectFollowerList(userid)){
+				postAccessor.insertTimeLine(row.getString("userid"), messageid, userid);
 			}
-		}
 	}
 	
 	public List<Post> getTimeLine(String userId){
 		List<Post> postList = new ArrayList<>();
 		
-		try(Session session = cluster.connect()){
-			PostAccessor test = createAccessor(session);
-			Result<Message> results = test.selectTimeLine(userId);
-			for(Message message : results){
-				String content = getContent(test, message.getMessageId());
-				if(!StringUtils.isBlank(content)){
-					Post post = new Post();
-					post.setContent(content);
-					post.setPostDate(message.getPostDate());
-					post.setUserId(message.getOwnerId());
-					postList.add(post);
-				}
+		Result<Message> results = postAccessor.selectTimeLine(userId);
+		for(Message message : results){
+			String content = getContent(postAccessor, message.getMessageId());
+			if(!StringUtils.isBlank(content)){
+				Post post = new Post();
+				post.setContent(content);
+				post.setPostDate(message.getPostDate());
+				post.setUserId(message.getOwnerId());
+				postList.add(post);
 			}
-			return postList;
 		}
+		return postList;
 	}
 
 	
 	public List<Post> getPostList(String userId){
 		List<Post> postList = new ArrayList<>();
 		
-		try(Session session = cluster.connect()){
-			PostAccessor test = createAccessor(session);
-			Result<Message> results = test.selectPostList(userId);
-			for(Message message : results){
-				String content = getContent(test, message.getMessageId());
-				if(!StringUtils.isBlank(content)){
-					Post post = new Post();
-					post.setContent(content);
-					post.setPostDate(message.getPostDate());
-					postList.add(post);
-				}
+		Result<Message> results = postAccessor.selectPostList(userId);
+		for(Message message : results){
+			String content = getContent(postAccessor, message.getMessageId());
+			if(!StringUtils.isBlank(content)){
+				Post post = new Post();
+				post.setContent(content);
+				post.setPostDate(message.getPostDate());
+				postList.add(post);
 			}
-			return postList;
 		}
+		return postList;
 	}
 	
 	private String getContent(PostAccessor test, UUID messageId){
@@ -93,53 +84,34 @@ public class SampleService {
 		}
 	}
 	
-	private PostAccessor createAccessor(Session session){
-		MappingManager manager = new MappingManager(session);
-		return manager.createAccessor(PostAccessor.class);
-	}
-	
 	public void addFollow(String userId, String followId){
-		try(Session session = cluster.connect()){
-			PostAccessor accessor = createAccessor(session);
-			accessor.insertFollow(userId, followId);
-			Result<Message> results = accessor.selectPostList(followId);
-			for(Message msg : results){
-				accessor.insertTimeLine(userId, msg.getMessageId(), followId);
-			}
+		postAccessor.insertFollow(userId, followId);
+		Result<Message> results = postAccessor.selectPostList(followId);
+		for(Message msg : results){
+			postAccessor.insertTimeLine(userId, msg.getMessageId(), followId);
 		}
 	}
 	
 	public void releaseFollow(String userId, String followId){
-		try(Session session = cluster.connect()){
-			PostAccessor accessor = createAccessor(session);
-			accessor.deleteFollow(userId, followId);
-			Result<Message> results = accessor.selectPostList(followId);
-			for(Message msg : results){
-				accessor.deleteTimeLine(userId, msg.getMessageId());
-			}
+		postAccessor.deleteFollow(userId, followId);
+		Result<Message> results = postAccessor.selectPostList(followId);
+		for(Message msg : results){
+			postAccessor.deleteTimeLine(userId, msg.getMessageId());
 		}
-		
 	}
 
 	public List<String> getFollowList(String userid) {
 		List<String> followList = new ArrayList<>();
-		try(Session session = cluster.connect()){
-			PostAccessor accessor = createAccessor(session);
-			for(Row row : accessor.selectFollowList(userid)){
-				followList.add(row.getString("followid"));
-			}
-			
+		for(Row row : postAccessor.selectFollowList(userid)){
+			followList.add(row.getString("followid"));
 		}
 		return followList;
 	}
 
 	public Object getFollowerList(String userid) {
 		List<String> followerList = new ArrayList<>();
-		try(Session session = cluster.connect()){
-			PostAccessor accessor = createAccessor(session);
-			for(Row row : accessor.selectFollowerList(userid)){
-				followerList.add(row.getString("userid"));
-			}
+		for(Row row : postAccessor.selectFollowerList(userid)){
+			followerList.add(row.getString("userid"));
 		}
 		return followerList;
 	}
