@@ -1,6 +1,7 @@
 package timeline.web;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,7 +33,7 @@ public class SampleService {
 			PostAccessor test = createAccessor(session);
 			ResultSet results = test.selectTimeUuid();
 			UUID messageid = results.one().getUUID("timeuuid");
-			test.insertPost(userid, messageid);
+			test.insertPost(userid, messageid, new Date().getTime());
 			test.insertMessage(messageid, content);
 			test.insertTimeLine(userid, messageid, userid);
 			for(Row row : test.selectFollowerList(userid)){
